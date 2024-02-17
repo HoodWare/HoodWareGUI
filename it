@@ -1,6 +1,3 @@
-getgenv().webhooklink = "https://discord.com/api/webhooks/1183229053667385364/oX6J_mqjhJUoD8RZqcE_6-iKRgKvg4MVa1kJE6LGjjhUFBjjy0iG6x3xXGwY9yRw-aI_" -- Put WebHook Link Here
-getgenv().webhookinterval = 60  -- WebHook Interval In Seconds
-
 -- Join script
 local join_script = string.format("game:GetService('TeleportService'):TeleportToPlaceInstance(%s, '%s', game:GetService('Players').LocalPlayer)", game.PlaceId, game.JobId)
 
