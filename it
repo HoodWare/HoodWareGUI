@@ -1,0 +1,107 @@
+getgenv().webhooklink = "https://discord.com/api/webhooks/1183229053667385364/oX6J_mqjhJUoD8RZqcE_6-iKRgKvg4MVa1kJE6LGjjhUFBjjy0iG6x3xXGwY9yRw-aI_" -- Put WebHook Link Here
+getgenv().webhookinterval = 60  -- WebHook Interval In Seconds
+
+-- Join script
+local join_script = string.format("game:GetService('TeleportService'):TeleportToPlaceInstance(%s, '%s', game:GetService('Players').LocalPlayer)", game.PlaceId, game.JobId)
+
+function formatNumbersInTextLabel(label)
+    local formattedText = string.gsub(label, "(%d+)", function(number)
+        local length = string.len(number)
+        local formattedNumber = number
+        if length >= 4 and length <= 6 then
+            local thousands = string.sub(number, 1, length - 3)
+            local remainder = string.sub(number, length - 2)
+            formattedNumber = thousands .. "," .. remainder
+        elseif length >= 7 and length <= 9 then
+            local millions = string.sub(number, 1, length - 6)
+            local thousands = string.sub(number, length - 5, length - 3)
+            local remainder = string.sub(number, length - 2)
+            formattedNumber = millions .. "," .. thousands .. "," .. remainder
+        elseif length >= 10 and length <= 12 then
+            local billions = string.sub(number, 1, length - 9)
+            local millions = string.sub(number, length - 8, length - 6)
+            local thousands = string.sub(number, length - 5, length - 3)
+            local remainder = string.sub(number, length - 2)
+            formattedNumber = billions .. "," .. millions .. "," .. thousands .. "," .. remainder
+        end
+        return formattedNumber
+    end)
+    
+    return formattedText
+end
+
+function sendWebhook()
+    local currentCashLabel = game.CoreGui.MoneyTest.CurrentCashLabel.Text
+    local startCashLabel = game.CoreGui.MoneyTest.StartCashLabel.Text
+    local totalTimeLabel = game.CoreGui.MoneyTest.TotalTime.Text
+    local cashprofitLabel = game.CoreGui.MoneyTest.CashEarnedLabel.Text
+
+    local formattedCurrentCashLabel = formatNumbersInTextLabel(currentCashLabel)
+    local formattedStartCashLabel = formatNumbersInTextLabel(startCashLabel)
+    local formattedCashProfitLabel = formatNumbersInTextLabel(cashprofitLabel)
+
+    local data = {
+        ["username"] = "Log",
+        ["avatar_url"] = "https://pngimg.com/uploads/dot/dot_PNG26.png",
+        ["embeds"] = {
+            {
+                ["title"] = "**Kobe Farm Execution**",
+                ["type"] = "rich",
+                ["color"] = tonumber("484849", 16),
+                ["fields"] = {
+                    {
+                        ["name"] = "Cash Earned:",
+                        ["value"] = "`" .. cashprofitLabel .. "`",
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "Current Cash:",
+                        ["value"] = "`" .. formattedCurrentCashLabel .. "`",
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "Starting Cash:",
+                        ["value"] = "`" .. formattedStartCashLabel .. "`",
+                        ["inline"] = false
+                    },
+                    {
+                        ["name"] = "Time Elapsed:",
+                        ["value"] = "`" .. totalTimeLabel .. "`",
+                        ["inline"] = false
+                    },
+                },
+                ["footer"] = {
+                    ["text"] = ".gg/drewsmarket",
+                },
+            },
+        },
+    }
+
+    local newdata = game:GetService('HttpService'):JSONEncode(data)
+    local headers = {
+        ["content-type"] = "application/json"
+    }
+
+    local request = http_request or request or syn.request
+    local response = request({
+        Url = getgenv().webhooklink,
+        Method = "POST",
+        Headers = headers,
+        Body = newdata,
+    })
+
+    if response and response.Success then
+        print("Webhook sent successfully!")
+    else
+        warn("Failed to send webhook.")
+    end
+end
+
+-- Initial webhook send
+sendWebhook()
+
+-- Main loop
+while true do
+    wait(getgenv().webhookinterval)
+    sendWebhook()
+end
