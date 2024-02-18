@@ -4,3 +4,4 @@ return {
 }
 -- BlackListed Users
 -- "asdaw", -- test
+-- "sadawda", -- test2
